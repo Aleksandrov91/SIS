@@ -42,7 +42,8 @@
 
             string[] splitRequestContent = requestString.Split(Environment.NewLine);
 
-            string requestLine = splitRequestContent[0].Trim();
+            string[] requestLine = splitRequestContent[0].Trim()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
             if (!this.IsValidRequestLine(requestLine))
             {
@@ -60,26 +61,23 @@
             this.ParseRequestParameters(requestParameters);
         }
 
-        private void ParseRequestMethod(string requestLine)
+        private void ParseRequestMethod(string[] requestLine)
         {
-            string requestLineMethod = requestLine
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .FirstOrDefault();
+            string requestMethod = requestLine.FirstOrDefault();
 
-            bool isParsed = Enum.TryParse<HttpRequestMethod>(requestLineMethod, true, out HttpRequestMethod requestMethod);
+            bool isParsed = Enum.TryParse<HttpRequestMethod>(requestMethod, true, out HttpRequestMethod parsedMethod);
 
             if (!isParsed)
             {
                 throw new BadRequestException();
             }
 
-            this.RequestMethod = requestMethod;
+            this.RequestMethod = parsedMethod;
         }
 
-        private void ParseRequestUrl(string requestLine)
+        private void ParseRequestUrl(string[] requestLine)
         {
             string requestLineUrl = requestLine
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
                 .Skip(1)
                 .FirstOrDefault();
 
@@ -93,10 +91,14 @@
 
         private void ParseRequestPath()
         {
-            string[] requestUrlParams = this.Url
-                .Split(new[] { '?', '#' });
+            string requestPath = this.Url
+                .Split(new[] { '?', '#' })
+                .FirstOrDefault();
 
-            string requestPath = requestUrlParams.FirstOrDefault();
+            if (string.IsNullOrEmpty(requestPath))
+            {
+                throw new BadRequestException();
+            }
 
             this.Path = requestPath;
         }
@@ -118,8 +120,7 @@
                 }
 
                 string[] headerParams = kvp
-                    .Split(": ", StringSplitOptions.RemoveEmptyEntries)
-                    .ToArray();
+                    .Split(": ", StringSplitOptions.RemoveEmptyEntries);
 
                 string headerKey = headerParams[0];
                 string headerValue = headerParams[1];
@@ -140,11 +141,11 @@
 
         private void ParseRequestParameters(string bodyParameters)
         {
-            this.ParseQueryParameters(this.Url);
+            this.ParseQueryParameters();
             this.ParseFormDataParameters(bodyParameters);
         }
 
-        private void ParseQueryParameters(string url)
+        private void ParseQueryParameters()
         {
             string queryParams = this.Url.Split(new[] { '?', '#' }, StringSplitOptions.RemoveEmptyEntries)
                 .Skip(1)
@@ -172,18 +173,22 @@
             {
                 string[] queryParam = param.Split('=', StringSplitOptions.RemoveEmptyEntries);
 
+                if (queryParam.Length != 2)
+                {
+                    throw new BadRequestException();
+                }
+
                 string queryKey = queryParam.FirstOrDefault();
                 string queryValue = queryParam.LastOrDefault();
 
+                // Should we ovveride values?
                 data[queryKey] = queryValue;
             }
         }
 
-        private bool IsValidRequestLine(string requestLine)
+        private bool IsValidRequestLine(string[] requestLine)
         {
-            string[] requestParams = requestLine.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-            return requestParams.Length == 3 && requestParams[2].Contains(GlobalConstants.HttpOneProtocolFragment);
+            return requestLine.Length == 3 && requestLine[2].Contains(GlobalConstants.HttpOneProtocolFragment);
         }
 
         private bool IsValidrequestQueryString(string queryString) => !string.IsNullOrEmpty(queryString) && queryString.Split('&').Length > 0;
