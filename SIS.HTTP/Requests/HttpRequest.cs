@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using System.Linq;
     using SIS.HTTP.Common;
+    using SIS.HTTP.Cookies;
+    using SIS.HTTP.Cookies.Contracts;
     using SIS.HTTP.Enums;
     using SIS.HTTP.Exceptions;
     using SIS.HTTP.Headers;
@@ -17,8 +19,9 @@
             this.FormData = new Dictionary<string, object>();
             this.QueryData = new Dictionary<string, object>();
             this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
 
-            this.ParseRequest(requestString);
+           this.ParseRequest(requestString);
         }
 
         public string Path { get; private set; }
@@ -30,6 +33,8 @@
         public Dictionary<string, object> QueryData { get; }
 
         public IHttpHeaderCollection Headers { get; }
+
+        public IHttpCookieCollection Cookies { get; }
 
         public HttpRequestMethod RequestMethod { get; private set; }
 
@@ -58,6 +63,7 @@
             string requestParameters = splitRequestContent.LastOrDefault();
 
             this.ParseHeaders(headers);
+            this.ParseCookies();
             this.ParseRequestParameters(requestParameters);
         }
 
@@ -92,7 +98,7 @@
         private void ParseRequestPath()
         {
             string requestPath = this.Url
-                .Split(new[] { '?', '#' })
+                .Split(GlobalConstants.QueryParamsSeparator)
                 .FirstOrDefault();
 
             if (string.IsNullOrEmpty(requestPath))
@@ -139,6 +145,27 @@
             }
         }
 
+        private void ParseCookies()
+        {
+            if (!this.Headers.ContainsHeader(GlobalConstants.CookieHeaderKey))
+            {
+                return;
+            }
+
+            string[] cookieRow = this.Headers.GetHeader(GlobalConstants.CookieHeaderKey).Value
+                .Split(GlobalConstants.CookieDelimiter, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string cookie in cookieRow)
+            {
+                string[] cookieKvps = cookie.Split(GlobalConstants.KeyValuePairDelimiter, 2);
+
+                string cookieKey = cookieKvps.FirstOrDefault();
+                string cookieValue = cookieKvps.LastOrDefault();
+
+                this.Cookies.Add(new HttpCookie(cookieKey, cookieValue));
+            }
+        }
+
         private void ParseRequestParameters(string bodyParameters)
         {
             this.ParseQueryParameters();
@@ -147,7 +174,7 @@
 
         private void ParseQueryParameters()
         {
-            string queryParams = this.Url.Split(new[] { '?', '#' }, StringSplitOptions.RemoveEmptyEntries)
+            string queryParams = this.Url.Split(GlobalConstants.QueryParamsSeparator, StringSplitOptions.RemoveEmptyEntries)
                 .Skip(1)
                 .FirstOrDefault();
 
@@ -167,11 +194,11 @@
             }
 
             // TODO: throw exception is params is invalid
-            string[] parameters = paramsString.Split('&', StringSplitOptions.RemoveEmptyEntries);
+            string[] parameters = paramsString.Split(GlobalConstants.QueryParamsDelimiter, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string param in parameters)
             {
-                string[] queryParam = param.Split('=', StringSplitOptions.RemoveEmptyEntries);
+                string[] queryParam = param.Split(GlobalConstants.KeyValuePairDelimiter, StringSplitOptions.RemoveEmptyEntries);
 
                 if (queryParam.Length != 2)
                 {
@@ -191,6 +218,6 @@
             return requestLine.Length == 3 && requestLine[2].Contains(GlobalConstants.HttpOneProtocolFragment);
         }
 
-        private bool IsValidrequestQueryString(string queryString) => !string.IsNullOrEmpty(queryString) && queryString.Split('&').Length > 0;
+        private bool IsValidrequestQueryString(string queryString) => !string.IsNullOrEmpty(queryString) && queryString.Split(GlobalConstants.QueryParamsDelimiter).Length > 0;
     }
 }
