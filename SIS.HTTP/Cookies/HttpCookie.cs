@@ -1,6 +1,7 @@
 ﻿namespace SIS.HTTP.Cookies
 {
     using System;
+    using SIS.HTTP.Common;
 
     public class HttpCookie
     {
@@ -28,6 +29,6 @@
 
         public bool IsNew { get; }
 
-        public override string ToString() => $"{this.Key}={this.Value}; {nameof(this.Expires)}={this.Expires.ToLongTimeString()}";
+        public override string ToString() => $"{this.Key}{GlobalConstants.KeyValuePairDelimiter}{this.Value}{GlobalConstants.CookieDelimiter}{nameof(this.Expires)}{GlobalConstants.KeyValuePairDelimiter}{this.Expires.ToString("r")}";
     }
 }

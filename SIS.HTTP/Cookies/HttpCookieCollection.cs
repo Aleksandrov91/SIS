@@ -7,7 +7,7 @@
     using SIS.HTTP.Common;
     using SIS.HTTP.Cookies.Contracts;
 
-    class HttpCookieCollection : IHttpCookieCollection
+    public class HttpCookieCollection : IHttpCookieCollection
     {
         private readonly IDictionary<string, HttpCookie> cookies;
 
@@ -35,6 +35,6 @@
 
         public bool HasCookies() => this.cookies.Any();
 
-        public override string ToString() => string.Join(GlobalConstants.CookieDelimiter, this.cookies);
+        public override string ToString() => string.Join(GlobalConstants.CookieDelimiter, this.cookies.Values);
     }
 }

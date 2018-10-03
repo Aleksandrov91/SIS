@@ -21,6 +21,7 @@
         public HttpResponse(HttpStatusCode statusCode)
         {
             this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
             this.Content = new byte[0];
             this.StatusCode = statusCode;
         }
