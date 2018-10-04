@@ -23,7 +23,7 @@
             this.Headers = new HttpHeaderCollection();
             this.Cookies = new HttpCookieCollection();
 
-           this.ParseRequest(requestString);
+            this.ParseRequest(requestString);
         }
 
         public string Path { get; private set; }
@@ -127,7 +127,7 @@
             {
                 if (string.IsNullOrEmpty(kvp))
                 {
-                    return;
+                    break;
                 }
 
                 string[] headerParams = kvp
@@ -198,7 +198,6 @@
                 return;
             }
 
-            // TODO: throw exception is params is invalid
             string[] parameters = paramsString.Split(GlobalConstants.QueryParamsDelimiter, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string param in parameters)
