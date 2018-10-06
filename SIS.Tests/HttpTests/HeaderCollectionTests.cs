@@ -1,12 +1,9 @@
-﻿using SIS.HTTP.Exceptions;
-using SIS.HTTP.Headers;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Xunit;
-
-namespace SIS.Tests.HttpTests
+﻿namespace SIS.Tests.HttpTests
 {
+    using SIS.HTTP.Exceptions;
+    using SIS.HTTP.Headers;
+    using Xunit;
+
     public class HeaderCollectionTests
     {
         [Fact]

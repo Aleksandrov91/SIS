@@ -1,8 +1,8 @@
-﻿using SIS.HTTP.Headers;
-using Xunit;
-
-namespace SIS.Tests.HttpTests
+﻿namespace SIS.Tests.HttpTests
 {
+    using SIS.HTTP.Headers;
+    using Xunit;
+
     public class HttpHeaderTests
     {
         [Fact]

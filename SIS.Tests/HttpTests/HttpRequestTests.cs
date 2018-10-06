@@ -1,10 +1,10 @@
-﻿using SIS.HTTP.Exceptions;
-using SIS.HTTP.Requests;
-using System.Text;
-using Xunit;
-
-namespace SIS.Tests.HttpTests
+﻿namespace SIS.Tests.HttpTests
 {
+    using System.Text;
+    using SIS.HTTP.Exceptions;
+    using SIS.HTTP.Requests;
+    using Xunit;
+
     public class HttpRequestTests
     {
         [Fact]
@@ -24,7 +24,7 @@ namespace SIS.Tests.HttpTests
             requestBuilder.AppendLine("Purpose: prefetch");
             requestBuilder.AppendLine("Upgrade-Insecure-Requests: 1");
             requestBuilder.AppendLine("User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36");
-            requestBuilder.AppendLine("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");                         
+            requestBuilder.AppendLine("Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8");
             requestBuilder.AppendLine("Accept-Encoding: gzip, deflate, br");
             requestBuilder.AppendLine("Accept-Language: bg-BG,bg;q=0.9,en;q=0.8");
             requestBuilder.AppendLine();
@@ -359,8 +359,6 @@ namespace SIS.Tests.HttpTests
 
             Assert.Empty(request.QueryData);
         }
-
-
 
         [Fact]
         public void RequestWithValidPath()
