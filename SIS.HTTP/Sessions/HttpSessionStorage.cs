@@ -7,8 +7,8 @@
     {
         public const string SessionCookieKey = "SIS_ID";
 
-        private static readonly ConcurrentDictionary<string, IHttpSession> sessions = new ConcurrentDictionary<string, IHttpSession>();
+        private static readonly ConcurrentDictionary<string, IHttpSession> Sessions = new ConcurrentDictionary<string, IHttpSession>();
 
-        public static IHttpSession GetSession(string id) => sessions.GetOrAdd(id, _ => new HttpSession(id));
+        public static IHttpSession GetSession(string id) => Sessions.GetOrAdd(id, _ => new HttpSession(id));
     }
 }

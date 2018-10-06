@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Web;
     using SIS.HTTP.Common;
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Cookies.Contracts;
@@ -193,10 +194,13 @@
 
         private void ExtractRequestParameters(string paramsString, Dictionary<string, object> data)
         {
+            // this.IsValidrequestQueryString(paramsString);
             if (string.IsNullOrEmpty(paramsString))
             {
                 return;
             }
+
+            paramsString = HttpUtility.UrlDecode(paramsString);
 
             string[] parameters = paramsString.Split(GlobalConstants.QueryParamsDelimiter, StringSplitOptions.RemoveEmptyEntries);
 
@@ -222,6 +226,7 @@
             return requestLine.Length == 3 && requestLine[2].Contains(GlobalConstants.HttpOneProtocolFragment);
         }
 
+        // TODO: Remvoe
         private bool IsValidrequestQueryString(string queryString) => !string.IsNullOrEmpty(queryString) && queryString.Split(GlobalConstants.QueryParamsDelimiter).Length > 0;
     }
 }

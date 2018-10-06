@@ -7,7 +7,7 @@
     public class RedirectResult : HttpResponse
     {
         public RedirectResult(string location)
-            : base(HttpStatusCode.Redirect)
+            : base(HttpStatusCode.Moved)
         {
             this.Headers.Add(new HttpHeader("Location", location));
         }
