@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>IRunes</title>
+</head>
+<body>
+    <h1>IRunes</h1>
+    <nav>
+        <ul>
+            <li>
+                <a href="/">Home</a>
+            </li>
+            <li>
+                <a href="/Albums/All">Albums</a>
+            </li>
+            <li>
+                <a href="/Users/Logout">Logout</a>
+            </li>
+        </ul>
+        <hr />
+    </nav>
+    <main>
+        {{errorMessage}}
+        <img src="{{albumCover}}" width="200" />
+        <h2>Name: {{albumName}}</h2>
+        <h2>Price: ${{albumPrice}}</h2>
+        <br />
+        <br />
+        <h2>Tracks</h2>
+        <hr />
+        <a href="/Tracks/Create?id={{albumId}}">Create Track</a>
+        <hr />
+        {{albumTracks}}
+        <hr />
+        <a href="/Albums/All">Back To All</a>
+    </main>
+    <footer>
+        <hr />
+        <p><strong>CopyRight &#x24B8; Sanity Design Studios. All rights reserved.</strong></p>
+    </footer>
+</body>
+</html>

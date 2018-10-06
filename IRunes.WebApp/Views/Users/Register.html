@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>IRunes</title>
+</head>
+<body>
+    <main>
+        <h1>Register</h1>
+        {{errorMessage}}
+        <form method="post" action="/Users/Register">
+            <label for="username">Username</label>
+            <input type="text" name="username" placeholder="Username..." />
+            <br />
+            <label for="password">Password</label>
+            <input type="password" name="password" placeholder="Password..." />
+            <br />
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" name="confirmPassword" placeholder="Confirm Password..." />
+            <br />
+            <label for="email">Email</label>
+            <input type="email" name="email" placeholder="Email..." />
+            <br />
+            <button>Register</button>
+        </form>
+    </main>
+    <footer>
+        <hr />
+        <p><strong>CopyRight &#x24B8; Sanity Design Studios. All rights reserved.</strong></p>
+    </footer>
+</body>
+</html>
