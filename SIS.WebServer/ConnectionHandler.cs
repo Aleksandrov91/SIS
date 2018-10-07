@@ -35,7 +35,11 @@
 
                 IHttpResponse httpResponse = this.HandleRequest(httpRequest);
 
-                this.SetResponseSession(httpResponse, sessionId);
+                // TODO: Use this method to set cookie only ones.
+                if (!httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SessionCookieKey))
+                {
+                    this.SetResponseSession(httpResponse, sessionId);
+                }
 
                 await this.PrepareResponse(httpResponse);
             }
