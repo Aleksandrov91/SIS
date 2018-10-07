@@ -10,7 +10,7 @@
         public TextResult(string content, HttpStatusCode statusCode)
             : base(statusCode)
         {
-            this.Headers.Add(new HttpHeader("Content-type", "text/plain"));
+            this.Headers.Add(new HttpHeader("Content-type", "text/plain; charset=utf-8"));
             this.Content = Encoding.UTF8.GetBytes(content);
         }
     }
