@@ -61,9 +61,9 @@
             result.AppendLine($"{GlobalConstants.HttpOneProtocolFragment} {this.StatusCode.GetResponseLine()}");
             result.AppendLine(this.Headers.ToString());
 
-            if (this.Cookies.HasCookies())
+            foreach (var httpCookie in this.Cookies)
             {
-                result.AppendLine($"Set-Cookie: {this.Cookies}");
+                result.AppendLine($"Set-Cookie: {httpCookie}");
             }
 
             result.AppendLine();

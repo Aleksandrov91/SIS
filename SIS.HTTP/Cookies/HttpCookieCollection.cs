@@ -1,6 +1,7 @@
 ﻿namespace SIS.HTTP.Cookies
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
@@ -29,6 +30,16 @@
             }
 
             return this.cookies[key];
+        }
+
+        public IEnumerator<HttpCookie> GetEnumerator()
+        {
+            return this.cookies.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         public bool ContainsCookie(string key) => this.cookies.ContainsKey(key);
