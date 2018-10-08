@@ -54,10 +54,15 @@
                 }
             }
 
+            string layoutPath = $"{GlobalConstants.ViewsFolderName}/Shared/_Layout{GlobalConstants.HtmlFileExtension}";
+            string layoutContent = File.ReadAllText(layoutPath);
+
+            string allContent = layoutContent.Replace("@RenderBody()", content);
+
             TempData.Clear();
             TempData["errorMessage"] = string.Empty;
 
-            return new HtmleResult(content, HttpStatusCode.OK);
+            return new HtmleResult(allContent, HttpStatusCode.OK);
         }
 
         protected IHttpResponse RedirectToAction(string route) => new RedirectResult(route);
