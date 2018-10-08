@@ -1,44 +1,15 @@
-﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>IRunes</title>
-</head>
-<body>
-    <h1>IRunes</h1>
-    <nav>
-        <ul>
-            <li>
-                <a href="/">Home</a>
-            </li>
-            <li>
-                <a href="/Albums/All">Albums</a>
-            </li>
-            <li>
-                <a href="/Users/Logout">Logout</a>
-            </li>
-        </ul>
-        <hr />
-    </nav>
-    <main>
-        {{errorMessage}}
-        <img src="{{albumCover}}" width="200" />
-        <h2>Name: {{albumName}}</h2>
-        <h2>Price: ${{albumPrice}}</h2>
-        <br />
-        <br />
-        <h2>Tracks</h2>
-        <hr />
-        <a href="/Tracks/Create?id={{albumId}}">Create Track</a>
-        <hr />
+﻿<div class="row">
+    <div class="card col-md-4" style="width: 18rem">
+        <img class="card-img-top" src="{{albumCover}}" alt="{{albumName}}">
+        <div class="card-body">
+            <h5 class="card-title">Album Name: {{albumName}}</h5>
+            <h5 class="card-title">Album Price: ${{albumPrice}}</h5>
+            <a class="btn btn-success float-left" href="/Tracks/Create?id={{albumId}}">Create Track</a>
+            <a class="btn btn-success float-right" href="/Albums/All">Back To All</a>
+        </div>
+    </div>
+    <div class="offset-md-2">
+        <h5>Tracks</h5>
         {{albumTracks}}
-        <hr />
-        <a href="/Albums/All">Back To All</a>
-    </main>
-    <footer>
-        <hr />
-        <p><strong>CopyRight &#x24B8; Sanity Design Studios. All rights reserved.</strong></p>
-    </footer>
-</body>
-</html>
+    </div>
+</div>

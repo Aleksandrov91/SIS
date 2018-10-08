@@ -20,6 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Views\Shared\_Layout.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Views\Tracks\Details.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -1,45 +1,20 @@
-﻿<!DOCTYPE html>
+﻿<div class="row">
+    <div class="offset-md-3 col-md-6">
+        <h1 class="text-center text-success">Create Album</h1>
+        <hr class="bg-success" style="height: 2px" />
 
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta charset="utf-8" />
-    <title>IRunes</title>
-</head>
-<body>
-    <h1>IRunes</h1>
-    <nav>
-        <ul>
-            <li>
-                <a href="/">Home</a>
-            </li>
-            <li>
-                <a href="/Albums/All">Albums</a>
-            </li>
-            <li>
-                <a href="/Users/Logout">Logout</a>
-            </li>
-        </ul>
-        <hr />
-    </nav>
-    <main>
-        <h1>Create Album</h1>
-        {{errorMessage}}
-        <hr />
-        <form method="post" action="Create">
+        <form class="form-group" method="post" action="Create">
             <label for="name">Name</label>
-            <input type="text" name="name" placeholder="Name..." />
+            <input class="form-control" type="text" name="name" placeholder="Name..." />
             <br />
             <label for="name">Cover Url</label>
-            <input type="text" name="cover" placeholder="Cover..." />
+            <input class="form-control" type="text" name="cover" placeholder="Cover..." />
             <br />
-            <button>Create</button>
+            <hr class="bg-success" style="height: 2px" />
+            <div class="inline-block">
+                <button type="submit" class="btn btn-success offset-md-3 float-left">Create</button>
+                <a class="btn btn-success float-right" href="/Albums/All">Back To All</a>
+            </div>
         </form>
-        <hr />
-        <a href="/Albums/All">Back To All</a>
-    </main>
-    <footer>
-        <hr />
-        <p><strong>CopyRight &#x24B8; Sanity Design Studios. All rights reserved.</strong></p>
-    </footer>
-</body>
-</html>
+    </div>
+</div>

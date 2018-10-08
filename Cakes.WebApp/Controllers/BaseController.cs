@@ -1,11 +1,10 @@
-﻿namespace IRunes.WebApp.Controllers
+﻿namespace Cakes.WebApp.Controllers
 {
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
     using System.Net;
     using System.Runtime.CompilerServices;
-    using IRunes.WebApp.Data;
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses.Contracts;
     using SIS.WebServer.Results;
@@ -14,7 +13,7 @@
     {
         protected BaseController()
         {
-            this.IRunesContext = new IRunesContext();
+            //this.IRunesContext = new IRunesContext();
             this.ViewBag = new Dictionary<string, string>();
         }
 
@@ -23,7 +22,7 @@
             ["errorMessage"] = string.Empty
         };
 
-        protected IRunesContext IRunesContext { get; private set; }
+        //protected IRunesContext IRunesContext { get; private set; }
 
         protected IDictionary<string, string> ViewBag { get; private set; }
 
@@ -54,15 +53,10 @@
                 }
             }
 
-            string layoutPath = $"{GlobalConstants.ViewsFolderName}/Shared/_Layout{GlobalConstants.HtmlFileExtension}";
-            string layoutContent = File.ReadAllText(layoutPath);
-
-            string allContent = layoutContent.Replace("@RenderBody()", content);
-
             TempData.Clear();
             TempData["errorMessage"] = string.Empty;
 
-            return new HtmleResult(allContent, HttpStatusCode.OK);
+            return new HtmleResult(content, HttpStatusCode.OK);
         }
 
         protected IHttpResponse RedirectToAction(string route) => new RedirectResult(route);
