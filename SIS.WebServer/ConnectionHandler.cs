@@ -1,6 +1,7 @@
 ﻿namespace SIS.WebServer
 {
     using System;
+    using System.IO;
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
@@ -11,6 +12,7 @@
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Contracts;
     using SIS.HTTP.Sessions;
+    using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
 
     public class ConnectionHandler
@@ -83,10 +85,25 @@
             if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod) ||
                 !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path))
             {
-                return new HttpResponse(HttpStatusCode.NotFound);
+                return this.ReturnIfResource(httpRequest.Path);
             }
 
             return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);
+        }
+
+        private IHttpResponse ReturnIfResource(string path)
+        {
+            string resourceFilePath = $"../../..{path}";
+
+            if (File.Exists(resourceFilePath))
+            {
+                string fileContent = File.ReadAllText(resourceFilePath);
+                byte[] byteContent = Encoding.UTF8.GetBytes(fileContent);
+
+                return new InlineResourceResult(byteContent, HttpStatusCode.OK);
+            }
+
+            return new HttpResponse(HttpStatusCode.NotFound);
         }
 
         private async Task PrepareResponse(IHttpResponse httpResponse)
