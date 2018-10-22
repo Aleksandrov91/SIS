@@ -2,16 +2,15 @@
 {
     using System;
     using System.Net;
-    using System.Text;
     using System.Web;
     using IRunes.WebApp.Models;
     using SIS.HTTP.Requests.Contracts;
-    using SIS.HTTP.Responses.Contracts;
+    using SIS.MvcFramework.ActionResults.Contracts;
     using SIS.WebServer.Results;
 
     public class TracksController : BaseController
     {
-        public IHttpResponse Create(IHttpRequest request)
+        public IActionResult Create(IHttpRequest request)
         {
             if (!this.IsAuthenticated(request))
             {
@@ -24,7 +23,7 @@
             return this.View();
         }
 
-        public IHttpResponse PostCreate(IHttpRequest request)
+        public IActionResult PostCreate(IHttpRequest request)
         {
             if (!this.IsAuthenticated(request))
             {
@@ -71,13 +70,14 @@
             }
             catch (Exception e)
             {
-                return new HtmleResult(e.Message, HttpStatusCode.InternalServerError);
+                // TODO: return error view.
+                //return new HtmleResult(e.Message, HttpStatusCode.InternalServerError);
             }
 
             return this.RedirectToAction($"/Albums/Details?{track.AlbumId}");
         }
 
-        public IHttpResponse Details(IHttpRequest request)
+        public IActionResult Details(IHttpRequest request)
         {
             if (!this.IsAuthenticated(request))
             {

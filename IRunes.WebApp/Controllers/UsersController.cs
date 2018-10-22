@@ -6,7 +6,7 @@
     using IRunes.WebApp.Models;
     using IRunes.WebApp.Services;
     using SIS.HTTP.Requests.Contracts;
-    using SIS.HTTP.Responses.Contracts;
+    using SIS.MvcFramework.ActionResults.Contracts;
     using SIS.WebServer.Results;
 
     public class UsersController : BaseController
@@ -18,21 +18,23 @@
             this.hashService = new HashService();
         }
 
-        public IHttpResponse Login(IHttpRequest request)
+        public IActionResult Login(IHttpRequest request)
         {
             if (this.IsAuthenticated(request))
             {
-                return this.BadRequestError("You should sign out first.");
+                // TODO: return error view.
+                //return this.BadRequestError("You should sign out first.");
             }
 
             return this.View();
         }
 
-        public IHttpResponse PostLogin(IHttpRequest request)
+        public IActionResult PostLogin(IHttpRequest request)
         {
             if (this.IsAuthenticated(request))
             {
-                return this.BadRequestError("You should sign out first.");
+                // TODO: return error view.
+                //return this.BadRequestError("You should sign out first.");
             }
 
             string username = request.FormData["username"].ToString();
@@ -53,24 +55,26 @@
 
             request.Session.AddParameter("username", user.Username);
 
-            return new RedirectResult("/");
+            return this.RedirectToAction("/");
         }
 
-        public IHttpResponse Register(IHttpRequest request)
+        public IActionResult Register(IHttpRequest request)
         {
             if (this.IsAuthenticated(request))
             {
-                return this.BadRequestError("You should sign out first.");
+                // TODO: return error view.
+                //return this.BadRequestError("You should sign out first.");
             }
 
             return this.View("Register");
         }
 
-        public IHttpResponse PostRegister(IHttpRequest request)
+        public IActionResult PostRegister(IHttpRequest request)
         {
             if (this.IsAuthenticated(request))
             {
-                return this.BadRequestError("You should sign out first.");
+                // TODO: return error view.
+                //return this.BadRequestError("You should sign out first.");
             }
 
             string username = request.FormData["username"].ToString();
@@ -120,15 +124,16 @@
             }
             catch (Exception e)
             {
-                return new HtmleResult(e.Message, HttpStatusCode.InternalServerError);
+                // TODO: return error view.
+                //return new HtmleResult(e.Message, HttpStatusCode.InternalServerError);
             }
 
             request.Session.AddParameter("username", username);
 
-            return new RedirectResult("/");
+            return this.RedirectToAction("/");
         }
 
-        public IHttpResponse Logout(IHttpRequest request)
+        public IActionResult Logout(IHttpRequest request)
         {
             if (this.IsAuthenticated(request))
             {
@@ -138,7 +143,7 @@
 
             request.Session.ClearParameters();
 
-            return new RedirectResult("/");
+            return this.RedirectToAction("/");
         }
     }
 }
