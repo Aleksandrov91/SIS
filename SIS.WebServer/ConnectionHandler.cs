@@ -12,6 +12,7 @@
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Contracts;
     using SIS.HTTP.Sessions;
+    using SIS.WebServer.Api;
     using SIS.WebServer.Results;
     using SIS.WebServer.Routing;
 
@@ -19,12 +20,12 @@
     {
         private readonly Socket client;
 
-        private readonly ServerRoutingTable serverRoutingTable;
+        private readonly IHttpHandler handler;
 
-        public ConnectionHandler(Socket client, ServerRoutingTable serverRoutingTable)
+        public ConnectionHandler(Socket client, IHttpHandler handler)
         {
             this.client = client;
-            this.serverRoutingTable = serverRoutingTable;
+            this.handler = handler;
         }
 
         public async Task ProcessRequestAsync()
@@ -35,7 +36,7 @@
             {
                 string sessionId = this.SetRequestSession(httpRequest);
 
-                IHttpResponse httpResponse = this.HandleRequest(httpRequest);
+                IHttpResponse httpResponse = this.handler.Handle(httpRequest);
 
                 // TODO: Use this method to set cookie only ones.
                 if (!httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SessionCookieKey))
@@ -78,32 +79,6 @@
             }
 
             return new HttpRequest(result.ToString());
-        }
-
-        private IHttpResponse HandleRequest(IHttpRequest httpRequest)
-        {
-            if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod) ||
-                !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path))
-            {
-                return this.ReturnIfResource(httpRequest.Path);
-            }
-
-            return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);
-        }
-
-        private IHttpResponse ReturnIfResource(string path)
-        {
-            string resourceFilePath = $"../../..{path}";
-
-            if (File.Exists(resourceFilePath))
-            {
-                string fileContent = File.ReadAllText(resourceFilePath);
-                byte[] byteContent = Encoding.UTF8.GetBytes(fileContent);
-
-                return new InlineResourceResult(byteContent, HttpStatusCode.OK);
-            }
-
-            return new HttpResponse(HttpStatusCode.NotFound);
         }
 
         private async Task PrepareResponse(IHttpResponse httpResponse)

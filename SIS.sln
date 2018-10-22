@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IRunes.WebApp", "IRunes.Web
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{D8D01612-B97D-47B3-B4F8-CEB828DABC95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cakes.WebApp", "Cakes.WebApp\Cakes.WebApp.csproj", "{3F921DE6-33E3-4434-BFCC-F475A314F6B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cakes.WebApp", "Cakes.WebApp\Cakes.WebApp.csproj", "{3F921DE6-33E3-4434-BFCC-F475A314F6B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SIS.MvcFramework", "SIS.MvcFramework\SIS.MvcFramework.csproj", "{9C2E89C0-EAA9-4F06-BB10-E70D23369FF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{3F921DE6-33E3-4434-BFCC-F475A314F6B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F921DE6-33E3-4434-BFCC-F475A314F6B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F921DE6-33E3-4434-BFCC-F475A314F6B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C2E89C0-EAA9-4F06-BB10-E70D23369FF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C2E89C0-EAA9-4F06-BB10-E70D23369FF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C2E89C0-EAA9-4F06-BB10-E70D23369FF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C2E89C0-EAA9-4F06-BB10-E70D23369FF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
