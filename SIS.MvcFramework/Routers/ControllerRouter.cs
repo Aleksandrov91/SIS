@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Net;
     using System.Reflection;
+    using SIS.HTTP.Extensions;
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Contracts;
@@ -22,7 +23,7 @@
             string actionName = string.Empty;
             string requestMethod = string.Empty;
 
-            if (request.Url == "/")
+            if (request.Path == "/")
             {
                 controllerName = "Home";
                 actionName = "Index";
@@ -30,7 +31,12 @@
             }
             else
             {
-                string[] requestUrlSplit = request.Url.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                string[] requestUrlSplit = request.Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+
+                if (requestUrlSplit.Length < 2)
+                {
+                    return new HttpResponse(HttpStatusCode.NotFound);
+                }
 
                 requestMethod = request.RequestMethod.ToString();
 
@@ -46,13 +52,15 @@
                 return new HttpResponse(HttpStatusCode.NotFound);
             }
 
-            return this.PrepareResponse(controller, action);
+            object[] actionParameters = this.MapActionParameters(action, request);
+
+            IActionResult actionResult = this.InvokeAction(controller, action, actionParameters);
+
+            return this.PrepareResponse(actionResult);
         }
 
-        private IHttpResponse PrepareResponse(Controller controller, MethodInfo action)
+        private IHttpResponse PrepareResponse(IActionResult actionResult)
         {
-            IActionResult actionResult = action.Invoke(controller, null) as IActionResult;
-
             string invocationResult = actionResult.Invoke();
 
             if (actionResult is IViewable)
@@ -134,6 +142,80 @@
             }
 
             return controller;
+        }
+
+        private object[] MapActionParameters(MethodInfo action, IHttpRequest request)
+        {
+            ParameterInfo[] actionParametersInfo = action.GetParameters();
+            object[] mappedActionParameters = new object[actionParametersInfo.Length];
+
+            for (var i = 0; i < actionParametersInfo.Length; i++)
+            {
+                var currentParameter = actionParametersInfo[i];
+
+                if (currentParameter.ParameterType.IsPrimitive ||
+                    currentParameter.ParameterType == typeof(string))
+                {
+                    mappedActionParameters[i] = this.ProccessPrimitiveParameter(currentParameter, request);
+                }
+                else
+                {
+                    mappedActionParameters[i] = this.ProccessBindingModelParameter(currentParameter, request);
+                }
+            }
+
+            return mappedActionParameters;
+        }
+
+        private object ProccessBindingModelParameter(ParameterInfo param, IHttpRequest request)
+        {
+            Type bindingModelType = param.ParameterType;
+
+            object bindingModelInstance = Activator.CreateInstance(bindingModelType);
+            IEnumerable<PropertyInfo> bindingModelProperties = bindingModelType.GetRuntimeProperties();
+
+            foreach (var property in bindingModelProperties)
+            {
+                try
+                {
+                    object value = this.GetParameterFromRequestData(request, property.Name.Capitalize());
+                    property.SetValue(bindingModelInstance, Convert.ChangeType(value, property.PropertyType));
+                }
+                catch
+                {
+                    Console.WriteLine($"The {property.Name} field could not be mapped.");
+                }
+            }
+
+            return Convert.ChangeType(bindingModelInstance, bindingModelType);
+        }
+
+        private object ProccessPrimitiveParameter(ParameterInfo actionParameter, IHttpRequest request)
+        {
+            object value = this.GetParameterFromRequestData(request, actionParameter.Name.Capitalize());
+
+            return Convert.ChangeType(value, actionParameter.ParameterType);
+        }
+
+        private object GetParameterFromRequestData(IHttpRequest request, string paramName)
+        {
+            // TODO: To lower
+            if (request.QueryData.ContainsKey(paramName))
+            {
+                return request.QueryData[paramName];
+            }
+
+            if (request.FormData.ContainsKey(paramName))
+            {
+                return request.FormData[paramName];
+            }
+
+            return null;
+        }
+
+        private IActionResult InvokeAction(Controller controller, MethodInfo action, object[] actionParameters)
+        {
+           return action.Invoke(controller, actionParameters) as IActionResult;
         }
     }
 }
