@@ -4,6 +4,7 @@
     using SIS.HTTP.Requests.Contracts;
     using SIS.MvcFramework.ActionResults;
     using SIS.MvcFramework.ActionResults.Contracts;
+    using SIS.MvcFramework.Models;
     using SIS.MvcFramework.Utilities;
     using SIS.MvcFramework.Views;
 
@@ -11,7 +12,10 @@
     {
         protected Controller()
         {
+            this.Model = new ViewModel();
         }
+
+        public ViewModel Model { get; }
 
         public IHttpRequest Request { get; set; }
 
@@ -21,7 +25,7 @@
 
             string viewFullyQualifiedName = ControllerUtilities.GetFullyQualifiedName(controllerName, viewName);
 
-            IRendable view = new View(viewFullyQualifiedName);
+            IRendable view = new View(viewFullyQualifiedName, this.Model.Data);
 
             return new ViewResult(view);
         }
