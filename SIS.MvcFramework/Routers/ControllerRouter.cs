@@ -2,10 +2,10 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.Linq;
     using System.Net;
     using System.Reflection;
-    using SIS.HTTP.Extensions;
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Contracts;
@@ -52,7 +52,7 @@
                 return new HttpResponse(HttpStatusCode.NotFound);
             }
 
-            object[] actionParameters = this.MapActionParameters(action, request);
+            object[] actionParameters = this.MapActionParameters(controller, action, request);
 
             IActionResult actionResult = this.InvokeAction(controller, action, actionParameters);
 
@@ -144,7 +144,7 @@
             return controller;
         }
 
-        private object[] MapActionParameters(MethodInfo action, IHttpRequest request)
+        private object[] MapActionParameters(Controller controller, MethodInfo action, IHttpRequest request)
         {
             ParameterInfo[] actionParametersInfo = action.GetParameters();
             object[] mappedActionParameters = new object[actionParametersInfo.Length];
@@ -160,11 +160,35 @@
                 }
                 else
                 {
-                    mappedActionParameters[i] = this.ProccessBindingModelParameter(currentParameter, request);
+                    object bindingModel = this.ProccessBindingModelParameter(currentParameter, request);
+                    controller.ModelState.IsValid = this.IsValidModel(bindingModel, currentParameter.ParameterType);
+                    mappedActionParameters[i] = bindingModel;
                 }
             }
 
             return mappedActionParameters;
+        }
+
+        private bool IsValidModel(object bindingModel, Type bindingModelType)
+        {
+            PropertyInfo[] modelProperties = bindingModelType.GetProperties();
+
+            foreach (var prop in modelProperties)
+            {
+                var propertyValidationAttributes = prop.GetCustomAttributes<ValidationAttribute>();
+
+                foreach (var validationAttribute in propertyValidationAttributes)
+                {
+                    var propertyValue = prop.GetValue(bindingModel);
+
+                    if (!validationAttribute.IsValid(propertyValue))
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         private object ProccessBindingModelParameter(ParameterInfo param, IHttpRequest request)
@@ -178,7 +202,7 @@
             {
                 try
                 {
-                    object value = this.GetParameterFromRequestData(request, property.Name.Capitalize());
+                    object value = this.GetParameterFromRequestData(request, property.Name.ToLower());
                     property.SetValue(bindingModelInstance, Convert.ChangeType(value, property.PropertyType));
                 }
                 catch
@@ -192,7 +216,7 @@
 
         private object ProccessPrimitiveParameter(ParameterInfo actionParameter, IHttpRequest request)
         {
-            object value = this.GetParameterFromRequestData(request, actionParameter.Name.Capitalize());
+            object value = this.GetParameterFromRequestData(request, actionParameter.Name.ToLower());
 
             return Convert.ChangeType(value, actionParameter.ParameterType);
         }
@@ -200,14 +224,14 @@
         private object GetParameterFromRequestData(IHttpRequest request, string paramName)
         {
             // TODO: To lower
-            if (request.QueryData.ContainsKey(paramName))
+            if (request.QueryData.ContainsKey(paramName.ToLower()))
             {
-                return request.QueryData[paramName];
+                return request.QueryData[paramName.ToLower()];
             }
 
-            if (request.FormData.ContainsKey(paramName))
+            if (request.FormData.ContainsKey(paramName.ToLower()))
             {
-                return request.FormData[paramName];
+                return request.FormData[paramName.ToLower()];
             }
 
             return null;
@@ -215,7 +239,7 @@
 
         private IActionResult InvokeAction(Controller controller, MethodInfo action, object[] actionParameters)
         {
-           return action.Invoke(controller, actionParameters) as IActionResult;
+            return action.Invoke(controller, actionParameters) as IActionResult;
         }
     }
 }

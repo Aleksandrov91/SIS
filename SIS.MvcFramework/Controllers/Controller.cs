@@ -13,7 +13,10 @@
         protected Controller()
         {
             this.Model = new ViewModel();
+            this.ModelState = new Model();
         }
+
+        public Model ModelState { get; set; }
 
         public ViewModel Model { get; }
 
