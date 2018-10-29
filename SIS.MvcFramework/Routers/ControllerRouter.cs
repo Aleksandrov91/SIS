@@ -12,11 +12,20 @@
     using SIS.MvcFramework.ActionResults.Contracts;
     using SIS.MvcFramework.Attributes.Methods;
     using SIS.MvcFramework.Controllers;
+    using SIS.MvcFramework.Services;
+    using SIS.MvcFramework.Services.Contracts;
     using SIS.WebServer.Api;
     using SIS.WebServer.Results;
 
     public class ControllerRouter : IHttpHandler
     {
+        private readonly IDependencyContainer dependencyContainer;
+
+        public ControllerRouter(IDependencyContainer dependencyContainer)
+        {
+            this.dependencyContainer = dependencyContainer;
+        }
+
         public IHttpResponse Handle(IHttpRequest request)
         {
             string controllerName = string.Empty;
@@ -134,7 +143,8 @@
 
             Type controllerType = Type.GetType(fullyQualifiedControllerName);
 
-            Controller controller = Activator.CreateInstance(controllerType) as Controller;
+            //Controller controller = Activator.CreateInstance(controllerType) as Controller;
+            Controller controller = this.dependencyContainer.CreateInstance(controllerType) as Controller;
 
             if (controller != null)
             {
