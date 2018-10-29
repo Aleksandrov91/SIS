@@ -5,22 +5,25 @@
     using System.Net;
     using IRunes.WebApp.Models;
     using IRunes.WebApp.Services;
+    using IRunes.WebApp.Services.Contracts;
     using SIS.HTTP.Requests.Contracts;
     using SIS.MvcFramework.ActionResults.Contracts;
+    using SIS.MvcFramework.Attributes.Methods;
     using SIS.WebServer.Results;
 
     public class UsersController : BaseController
     {
-        private HashService hashService;
+        private IHashService hashService;
 
-        public UsersController()
+        public UsersController(IHashService hashService)
         {
-            this.hashService = new HashService();
+            this.hashService = hashService;
         }
 
-        public IActionResult Login(IHttpRequest request)
+        [HttpGet]
+        public IActionResult Login()
         {
-            if (this.IsAuthenticated(request))
+            if (this.IsAuthenticated(this.Request))
             {
                 // TODO: return error view.
                 //return this.BadRequestError("You should sign out first.");
@@ -29,16 +32,17 @@
             return this.View();
         }
 
-        public IActionResult PostLogin(IHttpRequest request)
+        [HttpPost]
+        public IActionResult Login(string username2, string password2)
         {
-            if (this.IsAuthenticated(request))
+            if (this.IsAuthenticated(this.Request))
             {
                 // TODO: return error view.
                 //return this.BadRequestError("You should sign out first.");
             }
 
-            string username = request.FormData["username"].ToString();
-            string password = request.FormData["password"].ToString();
+            string username = this.Request.FormData["username"].ToString();
+            string password = this.Request.FormData["password"].ToString();
 
             string hashedPassword = this.hashService.HashPassword(password);
 
@@ -53,14 +57,14 @@
                 return this.RedirectToAction("/Users/Login");
             }
 
-            request.Session.AddParameter("username", user.Username);
+            this.Request.Session.AddParameter("username", user.Username);
 
             return this.RedirectToAction("/");
         }
 
-        public IActionResult Register(IHttpRequest request)
+        public IActionResult Register()
         {
-            if (this.IsAuthenticated(request))
+            if (this.IsAuthenticated(this.Request))
             {
                 // TODO: return error view.
                 //return this.BadRequestError("You should sign out first.");
@@ -69,18 +73,18 @@
             return this.View("Register");
         }
 
-        public IActionResult PostRegister(IHttpRequest request)
+        public IActionResult PostRegister()
         {
-            if (this.IsAuthenticated(request))
+            if (this.IsAuthenticated(this.Request))
             {
                 // TODO: return error view.
                 //return this.BadRequestError("You should sign out first.");
             }
 
-            string username = request.FormData["username"].ToString();
-            string password = request.FormData["password"].ToString();
-            string confirmPassword = request.FormData["confirmPassword"].ToString();
-            string email = request.FormData["email"].ToString();
+            string username = this.Request.FormData["username"].ToString();
+            string password = this.Request.FormData["password"].ToString();
+            string confirmPassword = this.Request.FormData["confirmPassword"].ToString();
+            string email = this.Request.FormData["email"].ToString();
 
             if (string.IsNullOrWhiteSpace(username))
             {
@@ -128,20 +132,20 @@
                 //return new HtmleResult(e.Message, HttpStatusCode.InternalServerError);
             }
 
-            request.Session.AddParameter("username", username);
+            this.Request.Session.AddParameter("username", username);
 
             return this.RedirectToAction("/");
         }
 
-        public IActionResult Logout(IHttpRequest request)
+        public IActionResult Logout()
         {
-            if (this.IsAuthenticated(request))
+            if (this.IsAuthenticated(this.Request))
             {
                 TempData["errorMessage"] = $"<h1 style=\"color: red\">Email is required.</h1>";
                 return this.RedirectToAction("/");
             }
 
-            request.Session.ClearParameters();
+            this.Request.Session.ClearParameters();
 
             return this.RedirectToAction("/");
         }
