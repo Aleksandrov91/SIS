@@ -1,31 +1,29 @@
 ﻿namespace SIS.WebServer
 {
     using System;
-    using System.IO;
-    using System.Net;
     using System.Net.Sockets;
     using System.Text;
     using System.Threading.Tasks;
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Requests;
     using SIS.HTTP.Requests.Contracts;
-    using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Contracts;
     using SIS.HTTP.Sessions;
     using SIS.WebServer.Api;
-    using SIS.WebServer.Results;
-    using SIS.WebServer.Routing;
 
     public class ConnectionHandler
     {
         private readonly Socket client;
 
-        private readonly IHttpHandler handler;
+        private readonly IHttpHandler routeHandler;
 
-        public ConnectionHandler(Socket client, IHttpHandler handler)
+        private readonly IHttpHandler resourceHandler;
+
+        public ConnectionHandler(Socket client, IHttpHandler handler, IHttpHandler resourceHandler)
         {
             this.client = client;
-            this.handler = handler;
+            this.routeHandler = handler;
+            this.resourceHandler = resourceHandler;
         }
 
         public async Task ProcessRequestAsync()
@@ -36,7 +34,16 @@
             {
                 string sessionId = this.SetRequestSession(httpRequest);
 
-                IHttpResponse httpResponse = this.handler.Handle(httpRequest);
+                IHttpResponse httpResponse = null;
+
+                if (this.IsResourceRequest(httpRequest))
+                {
+                    httpResponse = this.resourceHandler.Handle(httpRequest);
+                }
+                else
+                {
+                    httpResponse = this.routeHandler.Handle(httpRequest);
+                }
 
                 // TODO: Use this method to set cookie only ones.
                 if (!httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SessionCookieKey))
@@ -113,6 +120,11 @@
             {
                 httpResponse.AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey, $"{sessionId}; HttpOnly"));
             }
+        }
+
+        private bool IsResourceRequest(IHttpRequest httpRequest)
+        {
+            return httpRequest.Path.Contains('.');
         }
     }
 }

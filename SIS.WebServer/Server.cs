@@ -5,7 +5,6 @@
     using System.Net.Sockets;
     using System.Threading.Tasks;
     using SIS.WebServer.Api;
-    using SIS.WebServer.Routing;
 
     public class Server
     {
@@ -15,16 +14,19 @@
 
         private readonly TcpListener tcpListener;
 
-        private readonly IHttpHandler handler;
+        private readonly IHttpHandler routeHandler;
+
+        private readonly IHttpHandler resourceHandler;
 
         private bool isRunning;
 
-        public Server(int port, IHttpHandler handler)
+        public Server(int port, IHttpHandler routeHandler, IHttpHandler resourceHandler)
         {
             this.port = port;
             this.tcpListener = new TcpListener(IPAddress.Parse(LocalHostIpAddress), this.port);
 
-            this.handler = handler;
+            this.routeHandler = routeHandler;
+            this.resourceHandler = resourceHandler;
         }
 
         public void Run()
@@ -43,7 +45,8 @@
             while (this.isRunning)
             {
                 Socket client = await this.tcpListener.AcceptSocketAsync();
-                ConnectionHandler connectionHandler = new ConnectionHandler(client, this.handler);
+
+                ConnectionHandler connectionHandler = new ConnectionHandler(client, this.routeHandler, this.resourceHandler);
                 await connectionHandler.ProcessRequestAsync();
             }
         }

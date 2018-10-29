@@ -10,8 +10,9 @@
         public static void Main(string[] args)
         {
             IHttpHandler handler = new ControllerRouter();
+            IHttpHandler resourceHandler = new ResourceRouter();
 
-            Server server = new Server(80, handler);
+            Server server = new Server(80, handler, resourceHandler);
             MvcEngine.Run(server);
         }
     }
