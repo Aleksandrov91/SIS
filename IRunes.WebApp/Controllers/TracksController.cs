@@ -10,30 +10,30 @@
 
     public class TracksController : BaseController
     {
-        public IActionResult Create(IHttpRequest request)
+        public IActionResult Create()
         {
-            if (!this.IsAuthenticated(request))
+            if (!this.IsAuthenticated(this.Request))
             {
                 TempData["errorMessage"] = $"<h1 style=\"color: red\">Login first.</h1>";
                 return this.RedirectToAction("/Users/Login");
             }
 
-            this.ViewBag["albumId"] = request.QueryData["id"].ToString();
+            this.ViewBag["albumId"] = this.Request.QueryData["id"].ToString();
 
             return this.View();
         }
 
-        public IActionResult PostCreate(IHttpRequest request)
+        public IActionResult PostCreate()
         {
-            if (!this.IsAuthenticated(request))
+            if (!this.IsAuthenticated(this.Request))
             {
                 TempData["errorMessage"] = $"<h1 style=\"color: red\">Login first.</h1>";
                 return this.RedirectToAction("/Users/Login");
             }
 
-            string trackName = request.FormData["name"].ToString().Trim();
-            string trackLink = request.FormData["link"].ToString().Trim();
-            decimal trackPrice = decimal.Parse(request.FormData["price"].ToString());
+            string trackName = this.Request.FormData["name"].ToString().Trim();
+            string trackLink = this.Request.FormData["link"].ToString().Trim();
+            decimal trackPrice = decimal.Parse(this.Request.FormData["price"].ToString());
 
             if (string.IsNullOrWhiteSpace(trackName))
             {
@@ -59,7 +59,7 @@
                 Name = trackName,
                 Link = trackLink,
                 Price = trackPrice,
-                AlbumId = request.QueryData["albumId"].ToString()
+                AlbumId = this.Request.QueryData["albumId"].ToString()
             };
 
             this.IRunesContext.Tracks.Add(track);
@@ -77,16 +77,16 @@
             return this.RedirectToAction($"/Albums/Details?{track.AlbumId}");
         }
 
-        public IActionResult Details(IHttpRequest request)
+        public IActionResult Details()
         {
-            if (!this.IsAuthenticated(request))
+            if (!this.IsAuthenticated(this.Request))
             {
                 TempData["errorMessage"] = $"<h1 style=\"color: red\">Login first.</h1>";
                 return this.RedirectToAction("/Users/Login");
             }
 
-            string albumId = request.QueryData["albumId"].ToString();
-            string trackId = request.QueryData["trackId"].ToString();
+            string albumId = this.Request.QueryData["albumId"].ToString();
+            string trackId = this.Request.QueryData["trackId"].ToString();
 
             Track track = this.IRunesContext.Tracks.Find(trackId);
 

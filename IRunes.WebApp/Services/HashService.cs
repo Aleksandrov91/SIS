@@ -2,8 +2,9 @@
 {
     using System.Security.Cryptography;
     using System.Text;
+    using IRunes.WebApp.Services.Contracts;
 
-    public class HashService
+    public class HashService : IHashService
     {
         public string HashPassword(string password)
         {
@@ -14,6 +15,7 @@
             {
                 hash += theByte.ToString("x2");
             }
+
             return hash;
         }
     }

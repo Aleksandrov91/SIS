@@ -1,10 +1,7 @@
 ﻿namespace IRunes.WebApp.Controllers
 {
     using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using System.Net;
-    using System.Runtime.CompilerServices;
     using IRunes.WebApp.Data;
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses.Contracts;

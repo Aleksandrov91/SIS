@@ -1,5 +1,6 @@
 ﻿namespace IRunes.WebApp.Controllers
 {
+    using IRunes.WebApp.ViewModels;
     using SIS.HTTP.Requests.Contracts;
     using SIS.MvcFramework.ActionResults.Contracts;
     using SIS.MvcFramework.Attributes.Methods;
@@ -9,12 +10,14 @@
         [HttpGet]
         public IActionResult Index()
         {
-            //if (this.IsAuthenticated(request))
-            //{
-            //    this.ViewBag["username"] = request.Session.GetParameter("username").ToString();
+            if (this.IsAuthenticated(this.Request))
+            {
+                this.ViewBag["username"] = this.Request.Session.GetParameter("username").ToString();
 
-            //    return this.View("LoggedIndex");
-            //}
+                return this.View("LoggedIndex");
+            }
+
+            this.Model.Data["username"] = "Sasho";
 
             return this.View();
         }
