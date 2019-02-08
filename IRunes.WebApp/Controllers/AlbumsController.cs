@@ -8,13 +8,14 @@
     using IRunes.WebApp.Models;
     using SIS.HTTP.Requests.Contracts;
     using SIS.HTTP.Responses.Contracts;
+    using SIS.MvcFramework.ActionResults.Contracts;
     using SIS.WebServer.Results;
 
     public class AlbumsController : BaseController
     {
-        public IHttpResponse All(IHttpRequest request)
+        public IActionResult All()
         {
-            if (!this.IsAuthenticated(request))
+            if (!this.IsAuthenticated(this.Request))
             {
                 TempData["errorMessage"] = $"<h1 style=\"color: red\">Login first.</h1>";
                 return this.RedirectToAction("/Users/Login");
@@ -39,9 +40,9 @@
             return this.View();
         }
 
-        public IHttpResponse Create(IHttpRequest request)
+        public IActionResult Create()
         {
-            if (!this.IsAuthenticated(request))
+            if (!this.IsAuthenticated(this.Request))
             {
                 TempData["errorMessage"] = $"<h1 style=\"color: red\">Login first.</h1>";
                 return this.RedirectToAction("/Users/Login");
@@ -50,16 +51,16 @@
             return this.View();
         }
 
-        public IHttpResponse PostCreate(IHttpRequest request)
+        public IActionResult PostCreate()
         {
-            if (!this.IsAuthenticated(request))
+            if (!this.IsAuthenticated(this.Request))
             {
                 TempData["errorMessage"] = $"<h1 style=\"color: red\">Login first.</h1>";
                 return this.RedirectToAction("/Users/Login");
             }
 
-            string albumName = request.FormData["name"].ToString().Trim();
-            string albumCoverUrl = request.FormData["cover"].ToString().Trim();
+            string albumName = this.Request.FormData["name"].ToString().Trim();
+            string albumCoverUrl = this.Request.FormData["cover"].ToString().Trim();
 
             if (string.IsNullOrWhiteSpace(albumName))
             {
@@ -88,21 +89,22 @@
             }
             catch (Exception e)
             {
-                return new HtmleResult(e.Message, HttpStatusCode.InternalServerError);
+                // TODO: return error view.
+                //return new HtmleResult(e.Message, HttpStatusCode.InternalServerError);
             }
 
             return this.RedirectToAction("/Albums/All");
         }
 
-        public IHttpResponse Details(IHttpRequest request)
+        public IActionResult Details()
         {
-            if (!this.IsAuthenticated(request))
+            if (!this.IsAuthenticated(this.Request))
             {
                 TempData["errorMessage"] = $"<h1 style=\"color: red\">Login first.</h1>";
                 return this.RedirectToAction("/Users/Login");
             }
 
-            string albumId = request.QueryData["id"].ToString();
+            string albumId = this.Request.QueryData["id"].ToString();
 
             Album album = this.IRunesContext.Albums.Find(albumId);
 

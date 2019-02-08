@@ -1,30 +1,29 @@
 ﻿namespace SIS.WebServer
 {
     using System;
-    using System.IO;
-    using System.Net;
     using System.Net.Sockets;
     using System.Text;
     using System.Threading.Tasks;
     using SIS.HTTP.Cookies;
     using SIS.HTTP.Requests;
     using SIS.HTTP.Requests.Contracts;
-    using SIS.HTTP.Responses;
     using SIS.HTTP.Responses.Contracts;
     using SIS.HTTP.Sessions;
-    using SIS.WebServer.Results;
-    using SIS.WebServer.Routing;
+    using SIS.WebServer.Api;
 
     public class ConnectionHandler
     {
         private readonly Socket client;
 
-        private readonly ServerRoutingTable serverRoutingTable;
+        private readonly IHttpHandler routeHandler;
 
-        public ConnectionHandler(Socket client, ServerRoutingTable serverRoutingTable)
+        private readonly IHttpHandler resourceHandler;
+
+        public ConnectionHandler(Socket client, IHttpHandler handler, IHttpHandler resourceHandler)
         {
             this.client = client;
-            this.serverRoutingTable = serverRoutingTable;
+            this.routeHandler = handler;
+            this.resourceHandler = resourceHandler;
         }
 
         public async Task ProcessRequestAsync()
@@ -35,7 +34,16 @@
             {
                 string sessionId = this.SetRequestSession(httpRequest);
 
-                IHttpResponse httpResponse = this.HandleRequest(httpRequest);
+                IHttpResponse httpResponse = null;
+
+                if (this.IsResourceRequest(httpRequest))
+                {
+                    httpResponse = this.resourceHandler.Handle(httpRequest);
+                }
+                else
+                {
+                    httpResponse = this.routeHandler.Handle(httpRequest);
+                }
 
                 // TODO: Use this method to set cookie only ones.
                 if (!httpRequest.Cookies.ContainsCookie(HttpSessionStorage.SessionCookieKey))
@@ -80,32 +88,6 @@
             return new HttpRequest(result.ToString());
         }
 
-        private IHttpResponse HandleRequest(IHttpRequest httpRequest)
-        {
-            if (!this.serverRoutingTable.Routes.ContainsKey(httpRequest.RequestMethod) ||
-                !this.serverRoutingTable.Routes[httpRequest.RequestMethod].ContainsKey(httpRequest.Path))
-            {
-                return this.ReturnIfResource(httpRequest.Path);
-            }
-
-            return this.serverRoutingTable.Routes[httpRequest.RequestMethod][httpRequest.Path].Invoke(httpRequest);
-        }
-
-        private IHttpResponse ReturnIfResource(string path)
-        {
-            string resourceFilePath = $"../../..{path}";
-
-            if (File.Exists(resourceFilePath))
-            {
-                string fileContent = File.ReadAllText(resourceFilePath);
-                byte[] byteContent = Encoding.UTF8.GetBytes(fileContent);
-
-                return new InlineResourceResult(byteContent, HttpStatusCode.OK);
-            }
-
-            return new HttpResponse(HttpStatusCode.NotFound);
-        }
-
         private async Task PrepareResponse(IHttpResponse httpResponse)
         {
             byte[] byteSegments = httpResponse.GetBytes();
@@ -138,6 +120,11 @@
             {
                 httpResponse.AddCookie(new HttpCookie(HttpSessionStorage.SessionCookieKey, $"{sessionId}; HttpOnly"));
             }
+        }
+
+        private bool IsResourceRequest(IHttpRequest httpRequest)
+        {
+            return httpRequest.Path.Contains('.');
         }
     }
 }

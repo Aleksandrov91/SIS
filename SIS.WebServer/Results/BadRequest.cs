@@ -6,9 +6,8 @@
     {
         // TODO
         public BadRequest()
-            :base(System.Net.HttpStatusCode.BadRequest)
+            : base(System.Net.HttpStatusCode.BadRequest)
         {
-
         }
     }
 }

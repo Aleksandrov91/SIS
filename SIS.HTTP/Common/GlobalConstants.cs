@@ -15,5 +15,7 @@
         public const string QueryParamsDelimiter = "&";
 
         public const string QueryParamsSeparator = "?";
+
+        public const string HtmlFileExtension = ".html";
     }
 }
